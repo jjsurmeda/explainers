@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loop Engineering Explainers</title>
+<meta name="description" content="Animated, source-checked explainers on AI engineering topics by Jhay Surmeda.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jjsurmeda.github.io/explainers/">
+<meta property="og:title" content="Loop Engineering Explainers">
+<meta property="og:description" content="Animated, source-checked explainers on AI engineering topics.">
+<meta property="og:image" content="https://jjsurmeda.github.io/explainers/laya-vs-jev/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --navy:#14215c;--ink:#1f2a55;--muted:#5a6388;--blue:#2f5fe0;--blue-soft:#dfe7ff;
+  --jev:#e8650a;--line:#d8dcf3;--bg1:#e8eeff;--bg2:#f1eaff;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--body);color:var(--ink);line-height:1.55;min-height:100vh;padding-inline:16px;
+  background:linear-gradient(115deg,var(--bg1) 0%,#eef0ff 48%,var(--bg2) 100%) fixed;background-color:var(--bg1)}
+.wrap{max-width:1100px;margin:0 auto}
+header{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;align-items:end;padding-block:40px 8px}
+.eyebrow{font-size:.74rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+h1{font-family:var(--display);font-weight:800;text-transform:uppercase;color:var(--navy);font-size:clamp(2.6rem,7vw,5rem);line-height:.95;margin:10px 0 14px;text-wrap:balance}
+h1 span{color:var(--blue)}
+.lede{color:var(--muted);max-width:56ch;margin:0}
+.who{margin-top:16px;font-size:.85rem;font-weight:700;color:var(--navy)}
+.who a{color:var(--blue)}
+.fig{position:relative;height:340px;display:flex;justify-content:center}
+.fig::before{content:"";position:absolute;left:50%;top:6%;width:280px;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(77,123,255,.34),rgba(138,99,238,.2) 45%,transparent 70%)}
+.fig img{position:relative;height:100%;width:auto;filter:drop-shadow(0 14px 24px rgba(20,33,92,.22));
+  -webkit-mask-image:linear-gradient(to bottom,#000 85%,transparent);mask-image:linear-gradient(to bottom,#000 85%,transparent)}
+h2{font-family:var(--display);font-weight:800;text-transform:uppercase;color:var(--navy);font-size:1.6rem;margin:28px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;padding-bottom:48px}
+.card{display:grid;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;
+  box-shadow:0 10px 28px rgba(40,50,120,.08);transition:transform .2s,box-shadow .2s}
+.card:hover,.card:focus-visible{transform:translateY(-3px);box-shadow:0 16px 36px rgba(40,50,120,.16);outline:none}
+.card:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.card img{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;border-bottom:1px solid var(--line)}
+.body{padding:16px 18px 18px;display:grid;gap:8px}
+.card h3{margin:0;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:1.45rem;color:var(--navy);line-height:1}
+.card h3 .l{color:var(--blue)}.card h3 .j{color:var(--jev)}
+.card p{margin:0;font-size:.9rem;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.72rem}
+.tag{font-weight:800;padding:3px 8px;border-radius:6px;background:var(--blue-soft);color:var(--blue)}
+.date{font-family:var(--mono);color:var(--muted);margin-left:auto}
+.soon{display:grid;place-items:center;text-align:center;min-height:220px;border:2px dashed var(--line);border-radius:16px;color:var(--muted);font-weight:700;font-size:.9rem;padding:20px}
+footer{border-top:1px solid var(--line);padding-block:18px 32px;font-size:.78rem;color:var(--muted)}
+@media (max-width:720px){
+  header{grid-template-columns:1fr}
+  .fig{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Loop Engineering</div>
+      <h1>Explainers, <span>animated</span></h1>
+      <p class="lede">Short, source-checked slide decks on AI engineering topics. Each one has a presenter, interactive demos and a sources list you can verify.</p>
+      <div class="who">By Jhay Surmeda · <a href="https://www.linkedin.com/in/jjsurmeda" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/jjsurmeda" target="_blank" rel="noopener">GitHub</a></div>
+    </div>
+    <div class="fig" aria-hidden="true"><img src="shared/presenter/p-explain.webp" alt=""></div>
+  </header>
+
+  <h2>All explainers</h2>
+  <div class="grid">
+    <a class="card" href="laya-vs-jev/">
+      <img src="laya-vs-jev/preview.png" alt="Title slide of the Laya vs Jev explainer" loading="lazy">
+      <div class="body">
+        <h3><span class="l">Laya</span> vs <span class="j">Jev</span></h3>
+        <p>An open-source System 1 decision model versus TypeSafe's Jev: how it works, when to use it, and published benchmarks.</p>
+        <div class="meta"><span class="tag">Decision models</span><span class="tag">12 slides</span><span class="date">2026-09-26</span></div>
+      </div>
+    </a>
+    <div class="soon">Next explainer coming soon</div>
+  </div>
+
+  <footer>Figures in each explainer are as published by the sources it cites and were not re-run.</footer>
+</div>
+</body>
+</html>
