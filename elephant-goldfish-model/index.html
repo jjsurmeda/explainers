@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elephant-Goldfish Model Explainer</title>
+<meta name="description" content="An animated 14-slide explainer on Google's Elephant-Goldfish Model, an open-source plugin for Spec-Driven Development that designs with full context and reviews with none.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jjsurmeda.github.io/explainers/elephant-goldfish-model/">
+<meta property="og:title" content="The Elephant-Goldfish Model: an animated explainer">
+<meta property="og:description" content="How Google's EGM plugin works, a recommended workflow, and how it compares with Spec Kit and OpenSpec. Sources checked 14 November 2026.">
+<meta property="og:image" content="https://jjsurmeda.github.io/explainers/elephant-goldfish-model/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: a stack of 16:9 paper slides on a cool grey desk; slate = Elephant, orange = Goldfish. Single light theme by choice. */
+  color-scheme: light;
+  --desk:#E3E7EC;
+  --paper:#FCFCFD;
+  --ink:#16212C;
+  --muted:#586573;
+  --line:#D5DBE3;
+  --ele:#365578;
+  --ele-soft:#E5ECF4;
+  --fish:#D9650A;
+  --fish-soft:#FCE9D6;
+  --font-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+body{background:var(--desk);color:var(--ink);font-family:var(--font-body);padding:4px 0 28px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.slide{
+  width:min(100% - 32px, calc((100vh - 40px) * 16 / 9));
+  aspect-ratio:16/9;margin:20px auto;position:relative;overflow:hidden;
+  container-type:inline-size;scroll-snap-align:center;
+  background:var(--paper);border:1px solid var(--line);border-radius:10px;
+  box-shadow:0 1px 2px rgba(22,33,44,.06),0 12px 28px -18px rgba(22,33,44,.35);
+}
+.s{
+  --u:0.078125cqw; /* 1 design px on a 1280-wide slide */
+  --x1:calc(4*var(--u));--x2:calc(8*var(--u));--x3:calc(12*var(--u));--x4:calc(16*var(--u));
+  --x5:calc(24*var(--u));--x6:calc(32*var(--u));--x7:calc(48*var(--u));
+  --xs:calc(12.5*var(--u));--sm:calc(14.5*var(--u));--md:calc(17*var(--u));--lg:calc(21*var(--u));
+  --xl:calc(28*var(--u));--h:calc(40*var(--u));--hero:calc(66*var(--u));
+  position:absolute;inset:0;display:flex;flex-direction:column;gap:var(--x5);
+  padding:calc(40*var(--u)) calc(60*var(--u)) calc(50*var(--u));
+  font-size:var(--md);line-height:1.42;
+}
+.eyebrow{font-family:var(--font-mono);font-size:var(--xs);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;line-height:1.08;letter-spacing:-.01em}
+h1{font-size:var(--hero);font-weight:700}
+h2{font-size:var(--h);font-weight:700;margin-top:var(--x2)}
+h3{font-size:var(--lg);font-weight:700}
+p{text-wrap:pretty}
+.muted{color:var(--muted)}
+.small{font-size:var(--sm)}
+.tiny{font-size:var(--xs)}
+code,.mono{font-family:var(--font-mono);font-size:.9em}
+code{background:#EEF1F5;border-radius:calc(4*var(--u));padding:0 calc(5*var(--u));white-space:nowrap}
+.body{flex:1;min-height:0;display:flex;gap:var(--x6)}
+.col{display:flex;flex-direction:column;gap:var(--x4);min-width:0}
+.grow{flex:1}
+.foot{position:absolute;left:calc(60*var(--u));right:calc(60*var(--u));bottom:calc(18*var(--u));display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:calc(11.5*var(--u));color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:calc(10*var(--u));padding:var(--x5);display:flex;flex-direction:column;gap:var(--x2);background:#fff}
+.ele{color:var(--ele)}.fish{color:var(--fish)}
+.card.e{background:var(--ele-soft);border-color:transparent}
+.card.f{background:var(--fish-soft);border-color:transparent}
+.chip{display:inline-block;font-family:var(--font-mono);font-size:var(--xs);border:1px solid var(--line);border-radius:99px;padding:calc(3*var(--u)) calc(11*var(--u));background:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:var(--x2)}
+.icon{width:calc(84*var(--u));height:calc(64*var(--u));flex:none}
+.photo{object-fit:contain;max-width:100%;display:block}
+.who{font-size:var(--sm);line-height:1.3}
+.who b{font-family:var(--font-display);font-size:var(--md);display:block}
+ul.plain{list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--x3)}
+.kv{display:grid;grid-template-columns:calc(58*var(--u)) 1fr;gap:var(--x1) var(--x3);font-size:var(--sm)}
+.kv dt{font-family:var(--font-mono);font-size:var(--xs);text-transform:uppercase;letter-spacing:.06em;padding-top:calc(2*var(--u));opacity:.75}
+.num{font-family:var(--font-mono);font-size:var(--xs);width:calc(24*var(--u));height:calc(24*var(--u));border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);color:#fff;flex:none}
+.quote{font-family:var(--font-display);font-size:var(--xl);font-weight:500;line-height:1.15;border-left:calc(4*var(--u)) solid var(--fish);padding-left:var(--x4)}
+.note{font-size:var(--xs);color:var(--muted)}
+a{color:var(--ele)}
+a:focus-visible{outline:2px solid var(--fish);outline-offset:2px}
+
+/* flow steps */
+.flow{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--x3)}
+.step{border:1px solid var(--line);border-radius:calc(10*var(--u));padding:var(--x4);background:#fff;display:flex;flex-direction:column;gap:var(--x2);font-size:var(--sm);position:relative}
+.step h3{font-size:calc(19*var(--u))}
+.step .art{margin-top:auto;font-family:var(--font-mono);font-size:calc(11.5*var(--u));color:var(--muted);border-top:1px dashed var(--line);padding-top:var(--x2)}
+.step.e{border-top:calc(4*var(--u)) solid var(--ele)}
+.step.f{border-top:calc(4*var(--u)) solid var(--fish)}
+.step.y{border-top:calc(4*var(--u)) solid var(--ink)}
+.step:not(:last-child)::after{content:"";position:absolute;right:calc(-10*var(--u));top:50%;width:calc(8*var(--u));height:calc(8*var(--u));border-top:calc(2*var(--u)) solid var(--muted);border-right:calc(2*var(--u)) solid var(--muted);transform:rotate(45deg);z-index:1}
+.legend{display:flex;gap:var(--x5);font-size:var(--xs);color:var(--muted);align-items:center}
+.sw{display:inline-block;width:calc(18*var(--u));height:calc(4*var(--u));margin-right:calc(6*var(--u));vertical-align:middle}
+
+/* tables */
+table{border-collapse:collapse;width:100%;font-size:calc(13.5*var(--u));line-height:1.32}
+th,td{text-align:left;vertical-align:top;padding:calc(8*var(--u)) calc(10*var(--u));border-bottom:1px solid var(--line)}
+thead th{font-family:var(--font-display);font-size:calc(18*var(--u));border-bottom:calc(2*var(--u)) solid var(--ink)}
+tbody th{font-family:var(--font-mono);font-weight:500;font-size:calc(11.5*var(--u));text-transform:uppercase;letter-spacing:.06em;color:var(--muted);width:11%}
+td.hl,th.hl{background:var(--fish-soft)}
+
+/* coverage matrix */
+.matrix td,.matrix thead th{text-align:center}
+.matrix thead th{font-family:var(--font-mono);font-weight:500;font-size:calc(11.5*var(--u));text-transform:uppercase;letter-spacing:.05em;color:var(--muted);vertical-align:bottom}
+.matrix tbody th{font-family:var(--font-display);font-size:calc(19*var(--u));text-transform:none;letter-spacing:0;color:var(--ink);font-weight:700;width:14%;vertical-align:middle}
+.matrix td{font-size:calc(12*var(--u));color:var(--muted);width:12.2%}
+.lv{display:block;width:calc(22*var(--u));height:calc(22*var(--u));border-radius:50%;margin:0 auto calc(5*var(--u));border:calc(2*var(--u)) solid var(--ele)}
+.lv.full{background:var(--ele)}
+.lv.half{background:linear-gradient(90deg,var(--ele) 50%,transparent 50%)}
+.lv.none{border-color:var(--line)}
+tr.egm .lv{border-color:var(--fish)}
+tr.egm .lv.full{background:var(--fish)}
+tr.egm .lv.half{background:linear-gradient(90deg,var(--fish) 50%,transparent 50%)}
+tr.egm .lv.none{border-color:var(--line)}
+
+/* swimlane */
+.lanes{display:grid;grid-template-columns:calc(104*var(--u)) repeat(8,1fr);gap:calc(5*var(--u));font-size:calc(13*var(--u));line-height:1.28}
+.lanes>div{border-radius:calc(6*var(--u));padding:calc(7*var(--u)) calc(8*var(--u));min-height:calc(72*var(--u))}
+.lanes .hd{min-height:0;font-family:var(--font-display);font-weight:700;font-size:calc(15.5*var(--u));padding-bottom:calc(2*var(--u))}
+.lanes .hd span{display:block;font-family:var(--font-mono);font-weight:400;font-size:calc(11*var(--u));color:var(--muted)}
+.lanes .ln{font-family:var(--font-display);font-weight:700;font-size:calc(15*var(--u));display:flex;align-items:center;padding-left:0}
+.lanes .off{background:#F1F3F6}
+.lanes .y{background:#E3E6EA}
+.lanes .e{background:var(--ele-soft)}
+.lanes .f{background:var(--fish-soft)}
+.lanes .c{background:#E2F0E6}
+.lanes .cmd{min-height:0;font-family:var(--font-mono);font-size:calc(10.5*var(--u));color:var(--muted);padding-top:calc(2*var(--u));overflow-wrap:anywhere}
+
+/* pairings */
+.pipe{display:flex;flex-direction:column;gap:calc(5*var(--u));font-family:var(--font-mono);font-size:calc(12.5*var(--u))}
+.pipe span{border:1px solid var(--line);border-radius:calc(6*var(--u));padding:calc(5*var(--u)) calc(9*var(--u));background:#fff}
+.pipe .gate{background:var(--fish);border-color:var(--fish);color:#fff;font-weight:500}
+
+.codeblock{font-family:var(--font-mono);font-size:calc(12.5*var(--u));line-height:1.55;background:#EEF1F5;border-radius:calc(8*var(--u));padding:calc(9*var(--u)) calc(13*var(--u));white-space:pre;overflow:hidden}
+.card.e .codeblock{background:rgba(255,255,255,.7)}
+.inst{display:flex;flex-direction:column;gap:calc(3*var(--u));font-size:var(--sm)}
+.inst .codeblock{font-size:calc(12*var(--u))}
+.inst b{font-family:var(--font-display)}
+.layer{display:grid;grid-template-columns:calc(168*var(--u)) 1fr;gap:var(--x3);align-items:center;padding:var(--x3) var(--x4);border:1px solid var(--line);border-left:calc(5*var(--u)) solid var(--ele);border-radius:calc(8*var(--u));background:#fff}
+.layer.f{border-left-color:var(--fish)}
+.layer .mono{overflow-wrap:anywhere;display:block}
+.card.lens{padding:var(--x3) var(--x4);gap:var(--x1)}
+.card.lens h3{font-size:calc(17*var(--u))}
+td.mono{font-size:calc(12.5*var(--u));white-space:nowrap}
+
+.card.stage{padding:var(--x4);gap:var(--x2)}
+.card.stage h3{font-size:calc(19*var(--u))}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(calc(22*var(--u)))}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.4)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:none}}
+@keyframes fromSide{from{opacity:0;transform:translateX(calc(46*var(--u))) scale(.97)}to{opacity:1;transform:none}}
+@keyframes word{from{opacity:0;transform:translateY(.6em) rotate(4deg)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes swim{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(calc(-7*var(--u)),calc(-3*var(--u))) rotate(-5deg)}50%{transform:translate(calc(-12*var(--u)),0) rotate(0)}75%{transform:translate(calc(-5*var(--u)),calc(3*var(--u))) rotate(5deg)}}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-3.5deg) translateY(calc(-2*var(--u)))}}
+@keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(-5*var(--u)))}}
+@keyframes bubble{0%{opacity:0;transform:translateY(0) scale(.5)}20%{opacity:.8}100%{opacity:0;transform:translateY(calc(-46*var(--u))) scale(1.15)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(217,101,10,.5)}55%{box-shadow:0 0 0 calc(9*var(--u)) rgba(217,101,10,0)}}
+@keyframes sweep{from{background-position:120% 0}to{background-position:-20% 0}}
+@keyframes chev{0%,100%{opacity:.35}50%{opacity:1}}
+
+.slide.pre .a,.slide.pre .w{opacity:0}
+.slide.in .a{animation:rise .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0)*65ms + 120ms)}
+.slide.in .a.pop{animation-name:pop;animation-duration:.55s}
+.slide.in .photo.a{animation:fromSide .9s cubic-bezier(.2,.8,.2,1) .15s both,breathe 5.5s ease-in-out 1.2s infinite}
+.w{display:inline-block;transform-origin:0 100%}
+.slide.in .w{animation:word .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0)*55ms)}
+.slide.in .icon.ele.a{transform-origin:70% 90%;animation:pop .6s both,sway 4.2s ease-in-out .8s infinite;animation-delay:calc(var(--d,0)*65ms + 120ms),.9s}
+.slide.in .icon.fish.a{animation:pop .6s both,swim 3.6s ease-in-out .9s infinite;animation-delay:calc(var(--d,0)*65ms + 120ms),1s}
+.slide.in .gate.a{animation:rise .7s cubic-bezier(.2,.8,.2,1) both,pulse 2.2s ease-out 1.6s infinite;animation-delay:calc(var(--d,0)*65ms + 120ms),1.6s}
+.slide.in .step:not(:last-child)::after{animation:chev 1.6s ease-in-out infinite;animation-delay:calc(var(--d,0)*160ms)}
+.quote{position:relative;border-left:0}
+.quote::before{content:"";position:absolute;left:0;top:0;bottom:0;width:calc(4*var(--u));background:var(--fish);transform-origin:50% 0}
+.slide.in .quote::before{animation:growY .6s cubic-bezier(.2,.8,.2,1) .5s both}
+@keyframes growY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+h2{position:relative;padding-bottom:calc(10*var(--u))}
+h2::after{content:"";position:absolute;left:0;bottom:0;width:calc(64*var(--u));height:calc(4*var(--u));border-radius:99px;background:linear-gradient(90deg,var(--ele) 50%,var(--fish) 50%);transform-origin:0 50%}
+.slide.in h2::after{animation:grow .7s cubic-bezier(.2,.8,.2,1) .35s both}
+.slide.in td.hl,.slide.in th.hl{background-image:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.85) 50%,transparent 60%);background-size:300% 100%;background-repeat:no-repeat;animation:sweep 1.6s ease-out 1s both}
+.slide.in .a td.hl,.slide.in .a th.hl{animation:sweep 1.6s ease-out 1s both}
+.tank{position:relative;display:inline-flex}
+.tank i{position:absolute;left:calc(2*var(--u));top:calc(18*var(--u));width:calc(9*var(--u));height:calc(9*var(--u));border-radius:50%;border:calc(1.5*var(--u)) solid var(--fish);opacity:0}
+.slide.in .tank i{animation:bubble 2.8s ease-in infinite}
+.slide.in .tank i:nth-child(2){left:calc(-8*var(--u));width:calc(6*var(--u));height:calc(6*var(--u));animation-delay:.9s}
+.slide.in .tank i:nth-child(3){left:calc(10*var(--u));width:calc(5*var(--u));height:calc(5*var(--u));animation-delay:1.7s}
+.bar{position:fixed;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,var(--ele),var(--fish));transform-origin:0 50%;transform:scaleX(0);transition:transform .25s ease-out;z-index:5}
+@media (prefers-reduced-motion:reduce){
+  .slide .a,.slide .w,.slide .a.photo,.slide *::before,.slide *::after,.tank i,.slide td.hl,.slide th.hl{animation:none!important;opacity:1}
+  .tank i{opacity:0}
+}
+
+.topbar{position:fixed;right:14px;top:10px;display:flex;gap:6px;z-index:6}
+.topbar button{font:12px var(--font-mono);color:var(--ink);background:rgba(252,252,253,.92);border:1px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer}
+.topbar button:hover{border-color:var(--ele)}
+.topbar button:focus-visible{outline:2px solid var(--fish);outline-offset:2px}
+.topbar button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hud{position:fixed;right:14px;bottom:10px;font:12px var(--font-mono);color:var(--muted);background:rgba(252,252,253,.9);border:1px solid var(--line);border-radius:99px;padding:4px 10px}
+@media print{
+  .slide .a,.slide .w{animation:none!important;opacity:1!important}
+  .bar,.topbar{display:none}
+  @page{size:13.333in 7.5in;margin:0}
+  html{scroll-snap-type:none}
+  body{background:#fff;padding:0}
+  .slide{width:100vw;margin:0;border:0;border-radius:0;box-shadow:none;break-after:page}
+  .hud{display:none}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-ele" viewBox="0 0 120 92">
+    <ellipse cx="72" cy="44" rx="38" ry="27" fill="currentColor"/>
+    <rect x="50" y="58" width="13" height="30" rx="5" fill="currentColor"/>
+    <rect x="88" y="58" width="13" height="30" rx="5" fill="currentColor"/>
+    <circle cx="36" cy="38" r="23" fill="currentColor"/>
+    <path d="M22 46 C10 56 10 78 24 84" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+    <ellipse cx="48" cy="36" rx="12" ry="17" fill="#fff" opacity=".28"/>
+    <circle cx="27" cy="33" r="3" fill="#fff"/>
+    <path d="M109 38 q8 6 4 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-fish" viewBox="0 0 120 92">
+    <path d="M84 46 L116 20 Q104 46 116 72 Z" fill="currentColor"/>
+    <path d="M44 26 Q58 6 76 24 Z" fill="currentColor"/>
+    <ellipse cx="52" cy="46" rx="40" ry="24" fill="currentColor"/>
+    <path d="M52 52 q10 10 20 2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+    <circle cx="30" cy="40" r="6.5" fill="#fff"/>
+    <circle cx="29" cy="40" r="3" fill="#16212C"/>
+  </symbol>
+</svg>
+
+<!-- 1 -->
+<section class="slide" id="s1" aria-label="Slide 1: Title"><div class="s">
+  <div class="body" style="align-items:stretch">
+    <div class="col grow" style="justify-content:center;gap:var(--x5)">
+      <div class="eyebrow">Explainer · Spec-Driven Development</div>
+      <h1>The Elephant-Goldfish Model</h1>
+      <p style="font-size:var(--lg);max-width:34em">Google's open-source plugin for designing with full context and reviewing with none. Where it fits in Spec-Driven Development, and how it compares with Spec Kit and OpenSpec.</p>
+      <div style="display:flex;gap:var(--x4);align-items:center">
+        <svg class="icon ele"><use href="#i-ele"/></svg>
+        <span class="tank"><i></i><i></i><i></i><svg class="icon fish"><use href="#i-fish"/></svg></span>
+      </div>
+      <div class="chips">
+        <span class="chip">Open-sourced 22 Oct 2026</span>
+        <span class="chip">Apache 2.0</span>
+        <span class="chip">Antigravity · Claude Code · Codex</span>
+      </div>
+    </div>
+    <div class="col" style="width:30%;justify-content:flex-end;gap:var(--x2)">
+      <img class="photo" src="../shared/presenter/p-half.webp" alt="Illustrated portrait of the presenter" style="flex:1;min-height:0;object-position:bottom">
+      <div class="who"><b>Julius Jefferson Surmeda</b>Senior Full Stack / AI Developer</div>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>1 / 14</span></div>
+</div></section>
+
+<!-- 2 -->
+<section class="slide" id="s2" aria-label="Slide 2: The problem"><div class="s">
+  <header><div class="eyebrow">The problem</div><h2>AI scales your mistakes as fast as your code</h2></header>
+  <div class="body">
+    <div class="col" style="width:25%;justify-content:flex-end">
+      <img class="photo" src="../shared/presenter/p-explain.webp" alt="" style="flex:1;min-height:0;object-position:bottom">
+    </div>
+    <div class="col grow" style="justify-content:center;gap:var(--x5)">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--x4)">
+        <div class="card"><h3>Slop at speed</h3><p class="small">Agents produce code faster than a team can understand it. Bugs travel at the same pace.</p></div>
+        <div class="card"><h3>Context collapse</h3><p class="small">Long sessions lose the thread. Decisions made in chat never reach the repository.</p></div>
+        <div class="card"><h3>Shared blind spots</h3><p class="small">A reviewer who sat through the design conversation inherits its assumptions.</p></div>
+      </div>
+      <div>
+        <p class="quote">“Design is the new code.”</p>
+        <p class="note" style="margin-top:var(--x2);padding-left:calc(20*var(--u))">Dave Rensin, quoted by the EGM team on the Google Open Source Blog, October 2026</p>
+      </div>
+      <p style="max-width:44em">EGM's answer is to make the agent write a design document and defend it before any code exists.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>2 / 14</span></div>
+</div></section>
+
+<!-- 3 -->
+<section class="slide" id="s3" aria-label="Slide 3: Two roles"><div class="s">
+  <header><div class="eyebrow">The model</div><h2>Two agents with opposite memories</h2></header>
+  <div class="body" style="flex-direction:column;gap:var(--x4)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--x5);flex:1">
+      <div class="card e" style="gap:var(--x4)">
+        <div style="display:flex;gap:var(--x4);align-items:center"><svg class="icon ele"><use href="#i-ele"/></svg><div><h3 style="font-size:var(--xl)">Elephant</h3><p class="ele" style="font-weight:600">Remembers everything</p></div></div>
+        <dl class="kv">
+          <dt>Sees</dt><dd>Your project, requirements and earlier decisions</dd>
+          <dt>Job</dt><dd>Interview you, explore the problem, draft the specification</dd>
+          <dt>Rule</dt><dd>One long session that writes no code</dd>
+        </dl>
+      </div>
+      <div class="card f" style="gap:var(--x4)">
+        <div style="display:flex;gap:var(--x4);align-items:center"><svg class="icon fish"><use href="#i-fish"/></svg><div><h3 style="font-size:var(--xl)">Goldfish</h3><p class="fish" style="font-weight:600">Remembers nothing</p></div></div>
+        <dl class="kv">
+          <dt>Sees</dt><dd>Only the document and the source files it references</dd>
+          <dt>Job</dt><dd>Find missing assumptions, unclear requirements and implementation risks</dd>
+          <dt>Rule</dt><dd>A fresh subagent for every review</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="card" style="flex-direction:row;align-items:center;gap:var(--x4);padding:var(--x4) var(--x5)">
+      <h3>You</h3><p class="small">Make the architectural trade-offs, choose which findings to act on, and approve the specification before anything is implemented.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>3 / 14</span></div>
+</div></section>
+
+<!-- 4 -->
+<section class="slide" id="s4" aria-label="Slide 4: Why it works"><div class="s">
+  <header><div class="eyebrow">The idea</div><h2>Why a forgetful reviewer works</h2></header>
+  <div class="body">
+    <div class="col" style="width:46%;justify-content:center;gap:var(--x5)">
+      <div class="card e">
+        <p class="eyebrow ele">Illustration · Elephant rereads its own draft</p>
+        <div style="display:flex;gap:var(--x2);align-items:center;flex-wrap:wrap">
+          <span class="chip">Chat history</span><span>+</span><span class="chip">Design doc</span><span>→</span><b>“Looks complete.”</b>
+        </div>
+        <p class="small">Memory fills every gap in the text, so the gaps stay invisible.</p>
+      </div>
+      <div class="card f">
+        <p class="eyebrow fish">Illustration · Goldfish reads the same draft</p>
+        <div style="display:flex;gap:var(--x2);align-items:center;flex-wrap:wrap">
+          <span class="chip">Design doc</span><span>→</span><b>“What happens if the payment fails twice?”</b>
+        </div>
+        <p class="small">It reads the page literally. Anything that lived only in the conversation shows up as a question.</p>
+      </div>
+    </div>
+    <div class="col grow" style="justify-content:center">
+      <ul class="plain">
+        <li style="display:flex;gap:var(--x3)"><span class="num">1</span><div><h3>The comprehension test</h3><p class="small">If a Goldfish cannot explain the design back, the document is ambiguous and goes back to drafting.</p></div></li>
+        <li style="display:flex;gap:var(--x3)"><span class="num">2</span><div><h3>Fix the document</h3><p class="small">Answer a finding in the doc, then run a new Goldfish. Explaining it in chat turns the reviewer into a second Elephant.</p></div></li>
+        <li style="display:flex;gap:var(--x3)"><span class="num">3</span><div><h3>The doc becomes the handoff</h3><p class="small">A spec that survives a reader with no context can be handed to a coding agent with no context.</p></div></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>4 / 14</span></div>
+</div></section>
+
+<!-- 5 -->
+<section class="slide" id="s5" aria-label="Slide 5: Lifecycle"><div class="s">
+  <header><div class="eyebrow">The plugin</div><h2>The EGM lifecycle in six steps</h2></header>
+  <div class="body" style="flex-direction:column;gap:var(--x4)">
+    <div class="flow" style="flex:1">
+      <div class="step e"><span class="eyebrow">1 · Explore</span><h3>Brainstorm</h3><p>The Elephant interviews you. Fresh reviewers attack the idea through seven lenses.</p><div class="art">/egm-brainstorm<br>→ concepts_brief.md</div></div>
+      <div class="step e"><span class="eyebrow">2 · Draft</span><h3>Write the design</h3><p>Section by section, pausing for your feedback. Ends with an implementation plan.</p><div class="art">/egm-draft<br>→ design_draft.md,<br>saved to docs/designs/</div></div>
+      <div class="step f"><span class="eyebrow">3 · Review</span><h3>Goldfish protocol</h3><p>Zero-context reviewers check simplicity, clarity, design, fit with the code and readiness.</p><div class="art">/egm-review<br>→ findings report</div></div>
+      <div class="step y"><span class="eyebrow">4 · Resolve</span><h3>Triage findings</h3><p>You decide what to address. The doc is patched, then reviewed again if needed.</p><div class="art">/egm-resolve<br>↺ back to review</div></div>
+      <div class="step y"><span class="eyebrow">5 · Approve</span><h3>Sign off</h3><p>Open a PR for peer review. The approved spec lives in the repository.</p><div class="art">pull request</div></div>
+      <div class="step"><span class="eyebrow">6 · Implement</span><h3>Build</h3><p>Your coding agent implements the approved design.</p><div class="art">any coding agent</div></div>
+    </div>
+    <div class="legend"><span><i class="sw" style="background:var(--ele)"></i>Elephant</span><span><i class="sw" style="background:var(--fish)"></i>Goldfish</span><span><i class="sw" style="background:var(--ink)"></i>You decide</span></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--x4)" class="small">
+      <p><code>/egm-bootstrap</code> creates or updates documentation for an existing codebase, so brownfield work starts with context.</p>
+      <p><code>/egm-drift-report</code> compares checked-in docs with the current code. You choose whether the doc or the code changes.</p>
+      <p><code>/egm-review-loop</code> runs reviewers and standards you pick, for documents that are not software designs.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>5 / 14</span></div>
+</div></section>
+
+<!-- 6 -->
+<section class="slide" id="s6" aria-label="Slide 6: Brainstorm"><div class="s">
+  <header><div class="eyebrow">The plugin · /egm-brainstorm</div><h2>Brainstorm: attack the idea before writing it down</h2></header>
+  <div class="body">
+    <div class="col" style="width:46%;justify-content:center">
+      <ul class="plain">
+        <li style="display:flex;gap:var(--x3)"><span class="num">1</span><div><h3>Drill the problem</h3><p class="small">The Elephant asks open-ended questions over several turns. No multiple-choice shortcuts.</p></div></li>
+        <li style="display:flex;gap:var(--x3)"><span class="num">2</span><div><h3>Readiness gate</h3><p class="small">It sums up the working hypothesis in two or three sentences. Nothing is spawned until you confirm.</p></div></li>
+        <li style="display:flex;gap:var(--x3)"><span class="num">3</span><div><h3>Goldfish swarm</h3><p class="small">Reviewers run in parallel. Their findings are de-duplicated and the brief is written.</p></div></li>
+        <li style="display:flex;gap:var(--x3)"><span class="num">4</span><div><h3>Iterate</h3><p class="small">You get the file path and the two or three biggest risks, then refine until the concept holds.</p></div></li>
+        <li style="display:flex;gap:var(--x3)"><span class="num">5</span><div><h3>Hand off</h3><p class="small">Publish the brief as an RFC, move on to <code>/egm-draft</code>, keep refining, or stop and keep the brief.</p></div></li>
+      </ul>
+    </div>
+    <div class="col grow" style="justify-content:center;gap:var(--x3)">
+      <div class="eyebrow fish">Seven lenses the swarm looks through</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--x2)">
+        <div class="card f lens"><h3>Contrarian / YAGNI</h3><p class="small">Could an existing library or service solve most of this?</p></div>
+        <div class="card f lens"><h3>Cost, quota and tokens</h3><p class="small">What is the peak load and token budget? Will it hit quota ceilings?</p></div>
+        <div class="card f lens"><h3>UX and developer ergonomics</h3><p class="small">Is the API or CLI intuitive? Are the errors actionable?</p></div>
+        <div class="card f lens"><h3>Migration and compatibility</h3><p class="small">How do existing clients and data migrate, and how is rollback handled?</p></div>
+        <div class="card f lens"><h3>Observability and debugging</h3><p class="small">How will on-call triage an incident at 3 AM?</p></div>
+        <div class="card f lens"><h3>Tech debt and maintenance</h3><p class="small">Will this be painful to maintain in two years?</p></div>
+        <div class="card f lens" style="grid-column:1/-1"><h3>Inventive Catalyst</h3><p class="small">Which trade-off is being treated as inevitable, and can it be designed away?</p></div>
+      </div>
+      <p class="small">Output: <code>concepts_brief.md</code>, the agreed direction that <code>/egm-draft</code> turns into a design doc.</p>
+      <p class="note">Questions condensed from the lens table in the brainstorm skill.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>6 / 14</span></div>
+</div></section>
+
+<!-- 7 -->
+<section class="slide" id="s7" aria-label="Slide 7: Goldfish review"><div class="s">
+  <header><div class="eyebrow">The plugin</div><h2>Inside the Goldfish review</h2></header>
+  <div class="body" style="flex-direction:column;gap:var(--x4)">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:var(--x3);flex:1">
+      <div class="card f stage"><span class="eyebrow fish">Stage 1</span><h3>Zoom out</h3><p class="small">A skeptical architect asks whether this is the simplest design, and whether existing code could be reused.</p></div>
+      <div class="card f stage"><span class="eyebrow fish">Stage 2</span><h3>Comprehension</h3><p class="small">A naive reader gets the document alone and flags undefined terms and missing background.</p></div>
+      <div class="card f stage"><span class="eyebrow fish">Stage 3</span><h3>Critic</h3><p class="small">A hostile design critic attacks architecture, scale and unmitigated risk. Structure and style reviewers run beside it.</p></div>
+      <div class="card f stage"><span class="eyebrow fish">Stage 4</span><h3>Zoom out again</h3><p class="small">Re-audits whatever was added while answering stages 2 and 3, so fixes do not bloat the design.</p></div>
+      <div class="card f stage"><span class="eyebrow fish">Stage 5</span><h3>Implementation readiness</h3><p class="small">A pragmatic tech lead checks file paths, signatures and tests, leaving no design decision to the implementer.</p></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:var(--x4)">
+      <div class="card" style="padding:var(--x4) var(--x5)"><h3>Synthesizer</h3><p class="small">Runs the reviewers in parallel, removes duplicate findings and writes one consolidated report. You then work through it with <code>/egm-resolve</code>.</p></div>
+      <div class="card" style="padding:var(--x4) var(--x5)"><h3>Yours to tune</h3><p class="small">Reviewer personas and document standards are Markdown files in the repo. Teams can edit the rubrics to match their own rules.</p></div>
+    </div>
+    <p class="note">Stages run in order, with a checkpoint after each; reviewers inside a stage run in parallel. You can also run the feature-spec stages or the implementation stage alone. The skill numbers these stages 5 to 9, after four setup steps.</p>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>7 / 14</span></div>
+</div></section>
+
+<!-- 8 -->
+<section class="slide" id="s8" aria-label="Slide 8: What ships in the plugin"><div class="s">
+  <header><div class="eyebrow">The plugin</div><h2>What ships in the box: four layers, seven skills</h2></header>
+  <div class="body">
+    <div class="col" style="width:45%;justify-content:center;gap:var(--x3)">
+      <div class="layer"><div><h3>Skills</h3><span class="mono tiny muted">skills/</span></div><p class="small">The slash commands you run. Each is a modular capability.</p></div>
+      <div class="layer f"><div><h3>Personas</h3><span class="mono tiny muted">agents/</span></div><p class="small">Ten prompt files: Zoom Out, Comprehension, Design Critic, Implementation Readiness, Codebase Details, Structural, Style, Inventive Catalyst, the Synthesizer, and a bootstrap orchestrator.</p></div>
+      <div class="layer f"><div><h3>Document standards</h3><span class="mono tiny muted">resources/document_standards/</span></div><p class="small">Five versioned rubrics the reviewers load, including zoom-out, feature spec and implementation readiness.</p></div>
+      <div class="layer"><div><h3>Living docs</h3><span class="mono tiny muted">docs/</span></div><p class="small">User guides, plus approved design specs under <code>docs/designs/</code>.</p></div>
+      <div class="card" style="padding:var(--x3) var(--x4)"><p class="small"><b>Artifact-first.</b> Skills do not dump long drafts or review logs into chat. Content goes to files or side-panel artifacts, and the skill points you there and waits.</p></div>
+    </div>
+    <div class="col grow" style="justify-content:center">
+      <table>
+        <thead><tr><th style="width:38%">Skill</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">egm-brainstorm</td><td>Tests an idea with a seven-lens reviewer swarm and saves the brief</td></tr>
+          <tr><td class="mono">egm-draft</td><td>Compiles the design doc section by section</td></tr>
+          <tr><td class="mono">egm-review</td><td>Orchestrates the multi-stage Goldfish review</td></tr>
+          <tr><td class="mono">egm-resolve</td><td>Works through findings with you and patches the doc</td></tr>
+          <tr><td class="mono">egm-review-loop</td><td>Runs reviewers and standards you choose, for other documents</td></tr>
+          <tr><td class="mono">egm-bootstrap</td><td>Documents an existing codebase from the bottom up</td></tr>
+          <tr><td class="mono">egm-drift-report</td><td>Compares specs and READMEs with the code as it is now</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>8 / 14</span></div>
+</div></section>
+
+<!-- 9 -->
+<section class="slide" id="s9" aria-label="Slide 9: Recommended workflow"><div class="s">
+  <header><div class="eyebrow">Using it for Spec-Driven Development</div><h2>A recommended workflow, by who does what</h2></header>
+  <div class="body" style="flex-direction:column;gap:var(--x4)">
+    <div class="lanes">
+      <div></div>
+      <div class="hd">Bootstrap<span>existing repos</span></div><div class="hd">Brainstorm<span>no code yet</span></div><div class="hd">Draft<span>the spec</span></div><div class="hd">Review<span>fresh eyes</span></div><div class="hd">Resolve<span>loop until go</span></div><div class="hd">Approve<span>human gate</span></div><div class="hd">Implement<span>from the doc</span></div><div class="hd">Drift check<span>weekly</span></div>
+
+      <div class="ln">You</div>
+      <div class="y">Run once so the codebase is documented</div><div class="y">Bring the idea, answer the interview</div><div class="y">Give feedback on each section</div><div class="off"></div><div class="y">Triage every finding</div><div class="y">PR, peer review, merge</div><div class="y">Review the code</div><div class="y">Decide: fix the doc or the code</div>
+
+      <div class="ln ele">Elephant</div>
+      <div class="off"></div><div class="e">Probes trade-offs, writes the brief</div><div class="e">Writes the design doc</div><div class="off"></div><div class="e">Patches the doc</div><div class="off"></div><div class="off"></div><div class="off"></div>
+
+      <div class="ln fish">Goldfish</div>
+      <div class="off"></div><div class="f">Seven-lens challenge of the idea</div><div class="off"></div><div class="f">Staged review, one report</div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div>
+
+      <div class="ln" style="color:#2F6B45">Coding agent</div>
+      <div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="c">Builds from the approved doc, runs tests</div><div class="off"></div>
+
+      <div></div>
+      <div class="cmd">/egm-bootstrap</div><div class="cmd">/egm-brainstorm</div><div class="cmd">/egm-draft</div><div class="cmd">/egm-review</div><div class="cmd">/egm-resolve</div><div class="cmd">docs/designs/</div><div class="cmd">your agent</div><div class="cmd">/egm-drift-report</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--x4)" class="small">
+      <p><b>Build to the doc.</b> Google's guide: if the output is far off, update the design doc and retry. A fresh session is a useful extra test that the doc stands alone.</p>
+      <p><b>Filter, then loop.</b> Expect a lot of findings and choose which matter. Repeat until the readiness stage says go, then open a PR for a human reviewer.</p>
+      <p><b>Keep specs in the repo.</b> Versioned designs give the drift report something to measure the code against.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>9 / 14</span></div>
+</div></section>
+
+<!-- 10 -->
+<section class="slide" id="s10" aria-label="Slide 10: Existing codebases and drift"><div class="s">
+  <header><div class="eyebrow">Using it for Spec-Driven Development</div><h2>Existing codebases, and keeping the spec true</h2></header>
+  <div class="body" style="gap:var(--x5)">
+    <div class="card e grow" style="gap:var(--x3)">
+      <div class="eyebrow ele">Before the first feature</div>
+      <h3 style="font-size:var(--xl)">Bootstrap</h3>
+      <p class="small">Gives the Elephant something to remember on a repo that has no docs. It writes and verifies READMEs from the bottom up.</p>
+      <div class="pipe">
+        <span>1 · Deepest directories first</span>
+        <span>2 · Parents roll up their children</span>
+        <span>3 · Root README written last</span>
+      </div>
+      <p class="small">It writes documentation only, makes no commits, and re-reads every file it wrote to check it against the code. A person should still review the result.</p>
+      <p class="small" style="margin-top:auto"><code>/egm-bootstrap &lt;path/to/project&gt;</code></p>
+    </div>
+    <div class="card f grow" style="gap:var(--x3)">
+      <div class="eyebrow fish">After the code ships</div>
+      <h3 style="font-size:var(--xl)">Drift report</h3>
+      <p class="small">Specs rot when code moves on without them. The report scans the design folder and the code each doc references.</p>
+      <div class="pipe">
+        <span>1 · Compare each doc with current source</span>
+        <span>2 · List every place they diverge</span>
+        <span class="gate">3 · You decide: update the doc or fix the code</span>
+      </div>
+      <p class="small">It looks for missing features, incomplete data models, logic shortcuts and architectural divergence, and writes a dated <code>DRIFT_REPORT.md</code>. Google's guide suggests a weekly run.</p>
+      <p class="small" style="margin-top:auto"><code>/egm-drift-report docs/designs/</code></p>
+    </div>
+    <div class="col" style="width:24%;justify-content:center">
+      <h3>Why this pair matters</h3>
+      <p class="small">A design-first workflow only holds if the designs stay trustworthy.</p>
+      <p class="small">Bootstrap creates the first layer of written context. Drift reporting stops that context from going stale, so the next Elephant session starts from facts.</p>
+      <div class="codeblock">docs/designs/
+├─ SITEMAP.md   index
+└─ FEATURE.md   design spec</div>
+      <p class="note">Layout recommended by Google's guide for where specs live. Both skills apply to software codebases only.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>10 / 14</span></div>
+</div></section>
+
+<!-- 11 -->
+<section class="slide" id="s11" aria-label="Slide 11: Coverage"><div class="s">
+  <header><div class="eyebrow">Compare</div><h2>What each framework covers</h2></header>
+  <div class="body" style="flex-direction:column;gap:var(--x4)">
+    <table class="matrix">
+      <thead><tr><th></th><th>Project rules</th><th>Explore</th><th>Specify</th><th>Spec review before build</th><th>Plan and tasks</th><th>Implement</th><th>Spec and code in sync</th></tr></thead>
+      <tbody>
+        <tr class="egm"><th>EGM</th>
+          <td><i class="lv half"></i>review rubrics</td><td><i class="lv full"></i>brainstorm</td><td><i class="lv full"></i>design doc</td><td class="hl"><i class="lv full"></i>zero-context Goldfish</td><td><i class="lv half"></i>plan inside the doc</td><td><i class="lv none"></i>hands off to your agent</td><td><i class="lv full"></i>drift report, bootstrap</td></tr>
+        <tr><th>Spec Kit</th>
+          <td><i class="lv full"></i>constitution</td><td><i class="lv half"></i>clarify</td><td><i class="lv full"></i>spec.md</td><td class="hl"><i class="lv half"></i>analyze, checklists</td><td><i class="lv full"></i>plan.md, tasks.md</td><td><i class="lv full"></i>implement</td><td><i class="lv full"></i>converge</td></tr>
+        <tr><th>OpenSpec</th>
+          <td><i class="lv half"></i>config.yaml</td><td><i class="lv full"></i>explore</td><td><i class="lv full"></i>proposal, spec deltas</td><td class="hl"><i class="lv half"></i>format validation, human review</td><td><i class="lv full"></i>design.md, tasks.md</td><td><i class="lv full"></i>apply</td><td><i class="lv full"></i>sync, archive, verify</td></tr>
+      </tbody>
+    </table>
+    <div class="legend"><span><i class="lv full" style="display:inline-block;width:calc(12*var(--u));height:calc(12*var(--u));margin:0 calc(6*var(--u)) 0 0;vertical-align:middle"></i>core strength</span><span><i class="lv half" style="display:inline-block;width:calc(12*var(--u));height:calc(12*var(--u));margin:0 calc(6*var(--u)) 0 0;vertical-align:middle"></i>partial</span><span><i class="lv none" style="display:inline-block;width:calc(12*var(--u));height:calc(12*var(--u));margin:0 calc(6*var(--u)) 0 0;vertical-align:middle"></i>out of scope</span><span>Ratings are an editorial reading of each repository, checked 14 Nov 2026.</span></div>
+    <p style="font-size:var(--lg);font-family:var(--font-display);font-weight:500;max-width:46em">All three review the spec in some way. EGM is the one built around a reviewer that never saw the conversation.</p>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>11 / 14</span></div>
+</div></section>
+
+<!-- 12 -->
+<section class="slide" id="s12" aria-label="Slide 12: Side by side"><div class="s">
+  <header><div class="eyebrow">Compare</div><h2>Side by side</h2></header>
+  <div class="body">
+    <table>
+      <thead><tr><th></th><th class="hl">EGM</th><th>Spec Kit</th><th>OpenSpec</th></tr></thead>
+      <tbody>
+        <tr><th>From</th><td class="hl">Google engineers, Apache 2.0</td><td>GitHub, MIT</td><td>Fission AI, MIT</td></tr>
+        <tr><th>Core idea</th><td class="hl">A context-rich author and reviewers with no context</td><td>A fixed pipeline from principles to code</td><td>Every change is a proposal with spec deltas</td></tr>
+        <tr><th>Flow</th><td class="hl">brainstorm → draft → review → resolve → implement</td><td>constitution → specify → plan → tasks → implement → converge</td><td>explore → propose → apply → sync → archive</td></tr>
+        <tr><th>Artifacts</th><td class="hl">concepts_brief.md, one design doc per feature</td><td>constitution.md, spec.md, plan.md, tasks.md</td><td>proposal.md, delta specs, design.md, tasks.md</td></tr>
+        <tr><th>Review</th><td class="hl">Adversarial, isolated subagents working from rubrics</td><td>Optional clarify, checklists and a cross-artifact consistency check</td><td>Human review of the change folder, plus format validation</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>12 / 14</span></div>
+</div></section>
+
+<!-- 13 -->
+<section class="slide" id="s13" aria-label="Slide 13: Getting started"><div class="s">
+  <header><div class="eyebrow">Try it</div><h2>Getting started, and where it stops</h2></header>
+  <div class="body">
+    <div class="col" style="width:18%;justify-content:flex-end">
+      <img class="photo" src="../shared/presenter/p-point.webp" alt="" style="flex:1;min-height:0;object-position:bottom">
+    </div>
+    <div class="col grow" style="justify-content:center;gap:var(--x3)">
+      <div class="eyebrow">Install, then start a new session</div>
+      <div class="inst"><b>Antigravity</b><div class="codeblock">agy plugin install https://github.com/google/elephant-goldfish-model</div></div>
+      <div class="inst"><b>Claude Code <span class="muted" style="font-family:var(--font-body);font-weight:400">2.1.271 or later</span></b><div class="codeblock">claude plugin marketplace add google/elephant-goldfish-model
+claude plugin install egm@egm
+claude plugin enable egm@egm</div></div>
+      <div class="inst"><b>Codex CLI</b><div class="codeblock">codex plugin marketplace add google/elephant-goldfish-model
+codex plugin add egm@egm</div></div>
+      <div class="eyebrow" style="margin-top:var(--x2)">A first run</div>
+      <div class="codeblock">/egm-brainstorm Add webhook delivery to this project.
+/egm-draft
+/egm-review design_draft.md</div>
+      <p class="note">In Antigravity CLI and Claude Code, add the <span class="mono">/egm:</span> prefix, for example <span class="mono">/egm:egm-brainstorm</span>. In Codex, choose the skill from the skill picker.</p>
+    </div>
+    <div class="col" style="width:27%;justify-content:center">
+      <div class="card f" style="gap:var(--x3)">
+        <h3>Limits</h3>
+        <ul class="plain small" style="gap:var(--x2)">
+          <li>Brainstorm and review need a harness that can start fresh subagents. Without one, EGM stops the review.</li>
+          <li>Antigravity CLI, Claude Code and Codex pass Google's end-to-end tests. Standalone Antigravity IDE is not supported.</li>
+          <li>Isolation means no conversation history. On Codex and Antigravity, project files such as AGENTS.md are reported to still reach reviewers.</li>
+          <li>Install the whole plugin. Copying the skills folder alone breaks it.</li>
+          <li>A passed review does not replace tests or human judgment. For a simple bug fix, skip design-first.</li>
+          <li>Not an officially supported Google product. “Thousands of Googlers” is Google's own figure.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>13 / 14</span></div>
+</div></section>
+
+<!-- 14 -->
+<section class="slide" id="s14" aria-label="Slide 14: Takeaways"><div class="s">
+  <header><div class="eyebrow">Wrap-up</div><h2>Three things to keep</h2></header>
+  <div class="body">
+    <div class="col grow" style="justify-content:center;gap:var(--x5)">
+      <ul class="plain" style="gap:var(--x4)">
+        <li style="display:flex;gap:var(--x3)"><span class="num">1</span><div><h3>Write with context. Review without it.</h3><p class="small">The same memory that makes an agent a good author makes it a poor reviewer of its own work.</p></div></li>
+        <li style="display:flex;gap:var(--x3)"><span class="num">2</span><div><h3>The spec is the handoff.</h3><p class="small">If a Goldfish cannot build a mental model from the doc, a coding agent will not build the right code from it.</p></div></li>
+        <li style="display:flex;gap:var(--x3)"><span class="num">3</span><div><h3>Keep the spec alive.</h3><p class="small">Approved designs live in the repo, and a weekly drift report keeps them honest about the code.</p></div></li>
+      </ul>
+      <p class="note">EGM details checked against the repository at v0.1.1, 14 Nov 2026. Sources:
+        <a href="https://opensource.googleblog.com/2026/10/introducing-elephant-goldfish-model-plugin.html">Google Open Source Blog</a> ·
+        <a href="https://github.com/google/elephant-goldfish-model">google/elephant-goldfish-model</a> ·
+        <a href="https://github.com/google/elephant-goldfish-model/blob/main/docs/designs/architecture.md">EGM architecture doc</a> ·
+        <a href="https://github.com/google/elephant-goldfish-model/blob/main/docs/getting_started.md">EGM getting started</a> ·
+        <a href="https://github.com/google/elephant-goldfish-model/blob/main/docs/harnesses.md">EGM harnesses</a> ·
+        <a href="https://github.com/github/spec-kit">github/spec-kit</a> ·
+        <a href="https://github.com/Fission-AI/OpenSpec">Fission-AI/OpenSpec</a> ·
+        <a href="https://openspec.dev/docs/getting-started">openspec.dev</a> ·
+        <a href="https://theaiparadigm.substack.com/p/spec-driven-development">All Things AI (slide 4, point 2)</a>
+      </p>
+    </div>
+    <div class="col" style="width:24%;justify-content:flex-end;gap:var(--x2)">
+      <img class="photo" src="../shared/presenter/p-stand.webp" alt="Illustrated full-length portrait of the presenter" style="flex:1;min-height:0;object-position:bottom">
+      <div class="who"><b>Julius Jefferson Surmeda</b>Senior Full Stack / AI Developer</div>
+    </div>
+  </div>
+  <div class="foot"><span>Elephant-Goldfish Model</span><span>14 / 14</span></div>
+</div></section>
+
+<div class="bar" aria-hidden="true"></div>
+<div class="topbar">
+  <button type="button" id="auto" aria-pressed="false">▶ Autoplay</button>
+  <button type="button" id="speed" title="Seconds per slide">12s</button>
+</div>
+<div class="hud" aria-hidden="true">← → or swipe to move through 14 slides</div>
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  function current(){
+    var mid=window.innerHeight/2,best=0,d=Infinity;
+    slides.forEach(function(s,i){var r=s.getBoundingClientRect();var c=Math.abs((r.top+r.bottom)/2-mid);if(c<d){d=c;best=i;}});
+    return best;
+  }
+  document.addEventListener('keydown',function(e){
+    var k=e.key,step=0;
+    if(k==='ArrowDown'||k==='ArrowRight'||k==='PageDown'||k===' ')step=1;
+    else if(k==='ArrowUp'||k==='ArrowLeft'||k==='PageUp')step=-1;
+    else if(k==='Home'){e.preventDefault();slides[0].scrollIntoView({block:'center'});return;}
+    else if(k==='End'){e.preventDefault();slides[slides.length-1].scrollIntoView({block:'center'});return;}
+    if(!step)return;
+    e.preventDefault();
+    var n=Math.max(0,Math.min(slides.length-1,current()+step));
+    slides[n].scrollIntoView({block:'center'});
+  });
+  /* ---------- motion ---------- */
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SEL='header .eyebrow,.s>.body .eyebrow,h1,.layer,.inst,.codeblock,.card,.step,ul.plain>li,thead tr,tbody tr,.lanes>div,.pipe span,.chip,.quote,.legend,.icon,.photo,.who,.lv,.body p,.note';
+  slides.forEach(function(sl){
+    sl.querySelectorAll('h1,h2').forEach(function(hd){
+      var words=hd.textContent.trim().split(/\s+/);hd.textContent='';
+      words.forEach(function(w,i){var sp=document.createElement('span');sp.className='w';sp.textContent=w;sp.style.setProperty('--d',i);hd.appendChild(sp);if(i<words.length-1)hd.appendChild(document.createTextNode(' '));});
+    });
+    var n=0;
+    sl.querySelectorAll(SEL).forEach(function(el){
+      if(el.tagName==='H1')return;
+      if(el.closest('.a')&&!el.matches('.lv,.pipe span,ul.plain>li,.icon'))return;
+      el.classList.add('a');
+      var d;
+      if(el.parentElement.classList.contains('lanes')){var idx=[].indexOf.call(el.parentElement.children,el);d=(idx%9)*2+Math.floor(idx/9);}
+      else d=Math.min(n++,16);
+      if(el.matches('.lv,.icon'))el.classList.add('pop');
+      el.style.setProperty('--d',d);
+    });
+    sl.querySelectorAll('.step').forEach(function(st,i){st.style.setProperty('--d',st.style.getPropertyValue('--d'));});
+  });
+  function show(sl){sl.classList.remove('pre');sl.classList.add('in');}
+  function hide(sl){sl.classList.remove('in');sl.classList.add('pre');}
+  if(!reduce&&'IntersectionObserver' in window){
+    slides.forEach(function(sl){var r=sl.getBoundingClientRect();if(r.top<window.innerHeight*0.7&&r.bottom>0)show(sl);else hide(sl);});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.intersectionRatio>=0.3)show(e.target);else if(e.intersectionRatio===0)hide(e.target);
+    });},{threshold:[0,0.3]});
+    slides.forEach(function(sl){io.observe(sl);});
+  }else{slides.forEach(show);}
+  var bar=document.querySelector('.bar');
+  function prog(){var m=document.documentElement.scrollHeight-window.innerHeight;bar.style.transform='scaleX('+(m>0?Math.min(1,window.scrollY/m):0)+')';}
+  window.addEventListener('scroll',prog,{passive:true});prog();
+  /* deep links (#s1 … #s14) and autoplay */
+  function goTo(i,smooth){i=Math.max(0,Math.min(slides.length-1,i));slides[i].scrollIntoView({block:'center',behavior:smooth?'smooth':'auto'});}
+  function fromHash(){var m=/^#s(\d+)$/.exec(location.hash||'');if(m)goTo(+m[1]-1,false);}
+  window.addEventListener('hashchange',fromHash);fromHash();
+  var autoB=document.getElementById('auto'),speedB=document.getElementById('speed'),speeds=[8,12,16],delay=12,autoT=null;
+  function stopAuto(){clearInterval(autoT);autoT=null;autoB.setAttribute('aria-pressed','false');autoB.textContent='▶ Autoplay';}
+  function startAuto(){autoB.setAttribute('aria-pressed','true');autoB.textContent='❚❚ Pause';
+    autoT=setInterval(function(){var c=current();if(c>=slides.length-1){stopAuto();return;}goTo(c+1,true);},delay*1000);}
+  autoB.addEventListener('click',function(){autoT?stopAuto():startAuto();});
+  speedB.addEventListener('click',function(){delay=speeds[(speeds.indexOf(delay)+1)%speeds.length];speedB.textContent=delay+'s';if(autoT){stopAuto();startAuto();}});
+})();
+</script>
+</body>
+</html>
