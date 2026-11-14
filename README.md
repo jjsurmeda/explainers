@@ -7,6 +7,7 @@ Animated, source-checked slide decks on AI engineering topics, by [Jhay Surmeda]
 | Explainer | Link | Published |
 |---|---|---|
 | Laya vs Jev | [/laya-vs-jev/](https://jjsurmeda.github.io/explainers/laya-vs-jev/) | 2026-09-26 |
+| Elephant-Goldfish Model | [/elephant-goldfish-model/](https://jjsurmeda.github.io/explainers/elephant-goldfish-model/) | 2026-11-15 |
 
 ## Structure
 
@@ -30,4 +31,4 @@ Keep videos out of the repo. Post them natively or attach them to a GitHub Relea
 
 ## Deck controls
 
-Arrow keys or swipe to move. Autoplay and speed are in the top bar. Deep-link to a slide with `#s1` … `#s12`.
+Arrow keys or swipe to move. Autoplay and speed are in the top bar. Deep-link to a slide with `#s1`, `#s2` and so on.
